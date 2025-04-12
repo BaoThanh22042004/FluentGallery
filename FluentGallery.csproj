@@ -13,4 +13,8 @@
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.11.8" />
   </ItemGroup>
 
+	<ItemGroup>
+		<TrimmerRootAssembly Include="Microsoft.FluentUI.AspNetCore.Components.Icons" />
+	</ItemGroup>
+
 </Project>

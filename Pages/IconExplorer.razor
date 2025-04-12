@@ -1,103 +1,103 @@
 ﻿@page "/icons"
+@using System.Diagnostics.CodeAnalysis;
 
 <PageTitle>Icon Explorer</PageTitle>
 
 <h1>Explore Icons</h1>
 
 <FluentStack Style="margin-bottom: 1rem;">
-    <FluentSearch Placeholder="Search icons by name..." @bind-Value="searchText" />
-    <FluentSelect Width="100px" TOption="string" Items="@variants" @bind-Value="selectedVariant"
-        OptionText="@(item => item)" OptionValue="@(item => item)" />
-    <FluentSelect Width="100px" TOption="string" Items="@sizes" @bind-Value="selectedSize" OptionText="@(item => item)"
-        OptionValue="@(item => item)" />
-    <FluentSelect Width="100px" TOption="Color" Items="@colors" @bind-Value="selectedColorMapper"
-        OptionText="@(item => item.ToString())" OptionValue="@(item => item.ToString())" />
-    <FluentButton OnClick="FilterIcons">Apply Filters</FluentButton>
+	<FluentSearch Placeholder="Search icons by name..." @bind-Value="searchText" />
+	<FluentSelect Width="100px" TOption="string" Items="@variants" @bind-Value="selectedVariant"
+				  OptionText="@(item => item)" OptionValue="@(item => item)" />
+	<FluentSelect Width="100px" TOption="string" Items="@sizes" @bind-Value="selectedSize" OptionText="@(item => item)"
+				  OptionValue="@(item => item)" />
+	<FluentSelect Width="100px" TOption="Color" Items="@colors" @bind-Value="selectedColorMapper"
+				  OptionText="@(item => item.ToString())" OptionValue="@(item => item.ToString())" />
+	<FluentButton OnClick="FilterIcons">Apply Filters</FluentButton>
 </FluentStack>
 
 <div class="icon-grid">
-    @if (visibleIcons.Any())
-    {
-        @foreach (var icon in visibleIcons)
-        {
-            <div class="icon-card">
-                <div class="icon-preview">
-                    <FluentIcon Value="@icon" />
-                </div>
-                <div class="icon-info">
-                    <div class="icon-name">@GetIconName(icon)</div>
-                    <div class="icon-type">@GetIconType(icon)</div>
-                </div>
-            </div>
-        }
-    }
-    else
-    {
-        <div class="no-results">
-            <p>No icons match the current filters.</p>
-        </div>
-    }
+	@if (visibleIcons.Any())
+	{
+		@foreach (var icon in visibleIcons)
+		{
+			<div class="icon-card">
+				<div class="icon-preview">
+					<FluentIcon Value="@icon" />
+				</div>
+				<div class="icon-info">
+					<div class="icon-name">@GetIconName(icon)</div>
+					<div class="icon-type">@GetIconType(icon)</div>
+				</div>
+			</div>
+		}
+	}
+	else
+	{
+		<div class="no-results">
+			<p>No icons match the current filters.</p>
+		</div>
+	}
 </div>
 
 <style>
-    .icon-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 16px;
-    }
+	.icon-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+		gap: 16px;
+	}
 
-    .icon-card {
-        padding: 16px;
-        border: 1px solid #eaeaea;
-        border-radius: 8px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        transition: all 0.2s;
-    }
+	.icon-card {
+		padding: 16px;
+		border: 1px solid #eaeaea;
+		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		transition: all 0.2s;
+	}
 
-    .icon-card:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transform: translateY(-2px);
-    }
+		.icon-card:hover {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			transform: translateY(-2px);
+		}
 
-    .icon-preview {
+	.icon-preview {
+		margin-bottom: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 50px;
+	}
 
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 50px;
-    }
+	.icon-info {
+		text-align: center;
+		width: 100%;
+	}
 
-    .icon-info {
-        text-align: center;
-        width: 100%;
-    }
+	.icon-name {
+		font-weight: 500;
+		font-size: 14px;
+		margin-bottom: 4px;
+		word-break: break-word;
+	}
 
-    .icon-name {
-        font-weight: 500;
-        font-size: 14px;
-        margin-bottom: 4px;
-        word-break: break-word;
-    }
+	.icon-type {
+		font-size: 12px;
+		color: #666;
+	}
 
-    .icon-type {
-        font-size: 12px;
-        color: #666;
-    }
-
-    .no-results {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 40px;
-        color: #666;
-    }
+	.no-results {
+		grid-column: 1 / -1;
+		text-align: center;
+		padding: 40px;
+		color: #666;
+	}
 </style>
 
 @code {
-    static List<Icon> icons = [
-    .. GetIcons(typeof(Icons.Regular.Size10)),
+	static List<Icon> icons = [
+	.. GetIcons(typeof(Icons.Regular.Size10)),
 .. GetIcons(typeof(Icons.Regular.Size12)),
 .. GetIcons(typeof(Icons.Regular.Size16)),
 .. GetIcons(typeof(Icons.Regular.Size20)),
@@ -124,78 +124,78 @@
 .. GetIcons(typeof(Icons.Color.Size32)),
 .. GetIcons(typeof(Icons.Color.Size48)),
 ];
-    // Filter parameters
-    private string searchText = string.Empty;
-    private string selectedVariant = IconVariant.Regular.ToString();
-    private string selectedSize = IconSize.Size24.ToString();
-    private Color selectedColor = Color.Accent;
+	// Filter parameters
+	private string searchText = string.Empty;
+	private string selectedVariant = IconVariant.Regular.ToString();
+	private string selectedSize = IconSize.Size24.ToString();
+	private Color selectedColor = Color.Accent;
 
-    private string selectedColorMapper
-    {
-        get => selectedColor.ToString();
-        set
-        {
-            if (Enum.TryParse(value, out Color color))
-            {
-                selectedColor = color;
-            }
-        }
-    }
+	private string selectedColorMapper
+	{
+		get => selectedColor.ToString();
+		set
+		{
+			if (Enum.TryParse(value, out Color color))
+			{
+				selectedColor = color;
+			}
+		}
+	}
 
-    // Available filter options
-    private List<string> variants = Enum.GetNames(typeof(IconVariant)).ToList();
-    private List<string> sizes = ["All", .. Enum.GetNames(typeof(IconSize))];
-    private List<Color> colors = Enum.GetValues<Color>().ToList();
+	// Available filter options
+	private List<string> variants = Enum.GetNames(typeof(IconVariant)).ToList();
+	private List<string> sizes = ["All", .. Enum.GetNames(typeof(IconSize))];
+	private List<Color> colors = Enum.GetValues<Color>().ToList();
 
-    // Icons to display based on filters
-    List<Icon> visibleIcons = [];
+	// Icons to display based on filters
+	List<Icon> visibleIcons = [];
 
-    protected override void OnInitialized()
-    {
-        // Initialize the filter options
-        sizes.Remove(IconSize.Custom.ToString()); // Remove "Custom" size from the list
-        colors.Remove(Color.Custom); // Remove "Custom" color from the list
+	protected override void OnInitialized()
+	{
+		// Initialize the filter options
+		sizes.Remove(IconSize.Custom.ToString()); // Remove "Custom" size from the list
+		colors.Remove(Color.Custom); // Remove "Custom" color from the list
 
-        FilterIcons();
-    }
+		FilterIcons();
+	}
 
-    private void FilterIcons()
-    {
-        visibleIcons.Clear();
-        visibleIcons.AddRange(icons
-        .Where(icon =>
-        {
-            // Filter by search text
-            bool matchesSearch = string.IsNullOrWhiteSpace(searchText) || icon.Name.Contains(searchText,
-    StringComparison.OrdinalIgnoreCase);
+	private void FilterIcons()
+	{
+		visibleIcons.Clear();
+		visibleIcons.AddRange(icons
+		.Where(icon =>
+		{
+			// Filter by search text
+			bool matchesSearch = string.IsNullOrWhiteSpace(searchText) || icon.Name.Contains(searchText,
+	StringComparison.OrdinalIgnoreCase);
 
-            // Filter by variant
-            bool matchesVariant = icon.Variant.ToString() == selectedVariant;
+			// Filter by variant
+			bool matchesVariant = icon.Variant.ToString() == selectedVariant;
 
-            // Filter by size
-            bool matchesSize = selectedSize == "All" || icon.Size.ToString() == selectedSize;
+			// Filter by size
+			bool matchesSize = selectedSize == "All" || icon.Size.ToString() == selectedSize;
 
-            return matchesSearch && matchesVariant && matchesSize;
-        })
-        .Select(icon => icon.WithColor(selectedColor))
-        .ToList());
-        visibleIcons.Sort((x, y) => string.Compare(x.Name+x.Size.ToString(), y.Name+y.Size.ToString(), StringComparison.OrdinalIgnoreCase));
-        InvokeAsync(StateHasChanged);
-    }
+			return matchesSearch && matchesVariant && matchesSize;
+		})
+		.Select(icon => icon.WithColor(selectedColor))
+		.ToList());
+		visibleIcons.Sort((x, y) => string.Compare(x.Name + x.Size.ToString(), y.Name + y.Size.ToString(), StringComparison.OrdinalIgnoreCase));
+		InvokeAsync(StateHasChanged);
+	}
 
-    private static IEnumerable<Icon> GetIcons(Type type)
-    {
-        return type.GetNestedTypes(System.Reflection.BindingFlags.Public).Select(t => Activator.CreateInstance(t)).Cast<Icon>()
-        .Where(i => i is not null);
-    }
+	private static IEnumerable<Icon> GetIcons([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicNestedTypes)] Type type)
+	{
+		return type.GetNestedTypes(System.Reflection.BindingFlags.Public).Select(t => Activator.CreateInstance(t)).Cast<Icon>()
+		.Where(i => i is not null);
+	}
 
-    private string GetIconName(Icon icon)
-    {
-        return icon.Name;
-    }
+	private string GetIconName(Icon icon)
+	{
+		return icon.Name;
+	}
 
-    private string GetIconType(Icon icon)
-    {
-        return $"{icon.Variant} {icon.Size}";
-    }
+	private string GetIconType(Icon icon)
+	{
+		return $"{icon.Variant} {icon.Size}";
+	}
 }

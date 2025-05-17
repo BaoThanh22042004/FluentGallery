@@ -1,0 +1,171 @@
+﻿@page "/emojis"
+@using System.Diagnostics.CodeAnalysis;
+
+<PageTitle>Emoji Explorer</PageTitle>
+
+<h1>Explore Emojis</h1>
+
+<FluentStack Style="margin-bottom: 1rem;">
+	<FluentSearch Placeholder="Search emojis by name..." @bind-Value="searchText" />
+	<FluentSelect Width="150px" TOption="string" Items="@styles" @bind-Value="selectedStyle"
+	OptionText="@(item => item)" OptionValue="@(item => item)" />
+	<FluentButton OnClick="FilterEmojis">Apply Filters</FluentButton>
+</FluentStack>
+
+<div class="icon-grid">
+	@if (visibleEmojis.Any())
+	{
+		@foreach (var emoji in visibleEmojis)
+		{
+			<div class="icon-card">
+				<div class="icon-preview">
+					<FluentEmoji Value="@emoji" />
+				</div>
+				<div class="icon-info">
+					<div class="icon-name">@GetEmojiName(emoji)</div>
+					<div class="icon-type">@GetEmojiType(emoji)</div>
+				</div>
+			</div>
+		}
+	}
+	else
+	{
+		<div class="no-results">
+			<p>No emojis match the current filters.</p>
+		</div>
+	}
+</div>
+
+<style>
+	.icon-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+		gap: 16px;
+	}
+
+	.icon-card {
+		padding: 16px;
+		border: 1px solid #eaeaea;
+		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		transition: all 0.2s;
+	}
+
+		.icon-card:hover {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			transform: translateY(-2px);
+		}
+
+	.icon-preview {
+		margin-bottom: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 50px;
+	}
+
+	.icon-info {
+		text-align: center;
+		width: 100%;
+	}
+
+	.icon-name {
+		font-weight: 500;
+		font-size: 14px;
+		margin-bottom: 4px;
+		word-break: break-word;
+	}
+
+	.icon-type {
+		font-size: 12px;
+		color: #666;
+	}
+
+	.no-results {
+		grid-column: 1 / -1;
+		text-align: center;
+		padding: 40px;
+		color: #666;
+	}
+</style>
+
+@code {
+	static List<Emoji> emojis = [
+		.. GetEmojis(typeof(Emojis.Activities.Color.Default)),
+		.. GetEmojis(typeof(Emojis.Activities.Flat.Default)),
+		.. GetEmojis(typeof(Emojis.Activities.HighContrast.Default)),
+		.. GetEmojis(typeof(Emojis.AnimalsNature.Color.Default)),
+		.. GetEmojis(typeof(Emojis.AnimalsNature.Flat.Default)),
+		.. GetEmojis(typeof(Emojis.AnimalsNature.HighContrast.Default)),
+		.. GetEmojis(typeof(Emojis.Flags.Color.Default)),
+		.. GetEmojis(typeof(Emojis.Flags.Flat.Default)),
+		.. GetEmojis(typeof(Emojis.Flags.HighContrast.Default)),
+		.. GetEmojis(typeof(Emojis.FoodDrink.Color.Default)),
+		.. GetEmojis(typeof(Emojis.FoodDrink.Flat.Default)),
+		.. GetEmojis(typeof(Emojis.FoodDrink.HighContrast.Default)),
+		.. GetEmojis(typeof(Emojis.Objects.Color.Default)),
+		.. GetEmojis(typeof(Emojis.Objects.Flat.Default)),
+		.. GetEmojis(typeof(Emojis.Objects.HighContrast.Default)),
+		.. GetEmojis(typeof(Emojis.PeopleBody.Color.Default)),
+		.. GetEmojis(typeof(Emojis.PeopleBody.Flat.Default)),
+		.. GetEmojis(typeof(Emojis.PeopleBody.HighContrast.Default)),
+		.. GetEmojis(typeof(Emojis.SmileysEmotion.Color.Default)),
+		.. GetEmojis(typeof(Emojis.SmileysEmotion.Flat.Default)),
+		.. GetEmojis(typeof(Emojis.SmileysEmotion.HighContrast.Default)),
+		.. GetEmojis(typeof(Emojis.Symbols.Color.Default)),
+		.. GetEmojis(typeof(Emojis.Symbols.Flat.Default)),
+		.. GetEmojis(typeof(Emojis.Symbols.HighContrast.Default)),
+		.. GetEmojis(typeof(Emojis.TravelPlaces.Color.Default)),
+		.. GetEmojis(typeof(Emojis.TravelPlaces.Flat.Default)),
+		.. GetEmojis(typeof(Emojis.TravelPlaces.HighContrast.Default)),
+	];
+
+	// Filter parameters
+	private string searchText = string.Empty;
+	private string selectedStyle = EmojiStyle.Color.ToString();
+
+	// Available filter options
+	private List<string> styles = Enum.GetNames(typeof(EmojiStyle)).ToList();
+
+	// Emojis to display based on filters
+	List<Emoji> visibleEmojis = [];
+
+	private void FilterEmojis()
+	{
+		visibleEmojis.Clear();
+		visibleEmojis.AddRange(emojis
+			.Where(emoji =>
+			{
+				// Filter by search text
+				bool matchesSearch = string.IsNullOrWhiteSpace(searchText) ||
+					emoji.KeyWords.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+					emoji.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase);
+
+				// Filter by style
+				bool matchesVariant = emoji.Style.ToString() == selectedStyle;
+
+				return matchesSearch && matchesVariant;
+			})
+			.ToList());
+		visibleEmojis.Sort((x, y) => string.Compare(x.Group.ToString(),y.Group.ToString(), StringComparison.OrdinalIgnoreCase));
+		InvokeAsync(StateHasChanged);
+	}
+
+	private static IEnumerable<Emoji> GetEmojis([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicNestedTypes)] Type type)
+	{
+		return type.GetNestedTypes(System.Reflection.BindingFlags.Public).Select(t => Activator.CreateInstance(t)).Cast<Emoji>()
+					.Where(i => i is not null);
+	}
+
+	private string GetEmojiName(Emoji emoji)
+	{
+		return emoji.Name;
+	}
+
+	private string GetEmojiType(Emoji emoji)
+	{
+		return $"{emoji.Style} {emoji.Group}";
+	}
+}
